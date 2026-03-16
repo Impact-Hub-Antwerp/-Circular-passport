@@ -252,11 +252,23 @@ def admin_students(request: Request, key: str = ""):
     total_users = cur.fetchone()["n"]
 
     cur.execute("""
-        SELECT u.name AS name, u.email AS email, COUNT(c.id) AS cnt
+        SELECT
+            u.id,
+            u.name,
+            u.email,
+            COUNT(c.id) AS cnt,
+            COALESCE(
+                ARRAY_AGG(
+                    a.title || ' [' || a.code || ']'
+                    ORDER BY c.created_at DESC
+                ) FILTER (WHERE c.id IS NOT NULL),
+                ARRAY[]::TEXT[]
+            ) AS activities
         FROM users u
         LEFT JOIN completions c ON c.user_id = u.id
-        GROUP BY u.id
-        ORDER BY cnt DESC, u.name ASC
+        LEFT JOIN activities a ON a.code = c.activity_code
+        GROUP BY u.id, u.name, u.email
+        ORDER BY COUNT(c.id) DESC, u.name ASC
     """)
     rows = cur.fetchall()
 
@@ -269,6 +281,7 @@ def admin_students(request: Request, key: str = ""):
         "total": TOTAL_ACTIVITIES,
         "total_users": total_users
     })
+    
 @app.get("/logout")
 def logout(request: Request):
     request.session.clear()
