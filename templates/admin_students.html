@@ -13,15 +13,36 @@
   </div>
 
   <div style="height:12px"></div>
-  <input id="q" placeholder="Search name or email" oninput="filterRows()" />
+
+  <form method="get" action="/admin/students" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <input type="hidden" name="key" value="{{ admin_key }}">
+    <input id="q" placeholder="Search name or email" oninput="filterRows()" />
+
+    <select name="group_name" onchange="this.form.submit()">
+      <option value="">All groups</option>
+      {% for i in range(1, 56) %}
+        <option value="Group {{ i }}" {% if selected_group == "Group " ~ i %}selected{% endif %}>
+          Group {{ i }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
 </div>
 
 <div class="card" style="margin-top:14px;">
   <ul id="list" style="list-style:none; padding:0; margin:0;">
     {% for r in rows %}
-      <li data-text="{{ (r['name'] ~ ' ' ~ r['email'])|lower }}" style="padding:14px 0; border-bottom:1px solid #eaeaea;">
+      <li data-text="{{ (r['name'] ~ ' ' ~ r['email'] ~ ' ' ~ (r['group_name'] or ''))|lower }}" style="padding:14px 0; border-bottom:1px solid #eaeaea;">
         <strong>{{ r["name"] }}</strong><br>
         <span class="muted">{{ r["email"] }}</span><br>
+        <span class="muted">
+          Group:
+          {% if r["group_name"] %}
+            {{ r["group_name"] }}
+          {% else %}
+            Not selected
+          {% endif %}
+        </span><br>
         <span class="pill">{{ r["cnt"] }} / {{ total }}</span>
 
         <details style="margin-top:10px;">
