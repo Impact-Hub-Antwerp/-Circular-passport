@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 
 
 APP_NAME = "Digital Circular Passport"
-TOTAL_ACTIVITIES = 50
+TOTAL_ACTIVITIES = 6
 QR_PREFIX = "CF26-"
 
 SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key")
