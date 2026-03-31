@@ -4,7 +4,9 @@
 <div class="card">
   <div class="top">
     <strong>Teacher Dashboard</strong>
-    <span class="pill">Auto refresh: <span id="sec">15</span>s</span>
+    <a href="/admin/students?key={{ admin_key }}{% if selected_group %}&group_name={{ selected_group|urlencode }}{% endif %}">
+      <button type="button">Refresh</button>
+    </a>
   </div>
 
   <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
@@ -76,28 +78,6 @@
       li.style.display = t.includes(q) ? "" : "none";
     });
   }
-
-  (function startAutoRefresh(){
-    if (window.__autoRefreshStarted) return;
-    window.__autoRefreshStarted = true;
-
-    let remaining = 15;
-    const secEl = document.getElementById("sec");
-    secEl.textContent = String(remaining);
-
-    setInterval(() => {
-      remaining -= 1;
-      if (remaining <= 0) {
-        secEl.textContent = "0";
-      } else {
-        secEl.textContent = String(remaining);
-      }
-    }, 1000);
-
-    setTimeout(() => {
-      window.location.replace(window.location.href);
-    }, 15000);
-  })();
 </script>
 
 {% endblock %}
